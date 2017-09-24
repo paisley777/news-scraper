@@ -4,7 +4,7 @@
 // Dependencies
 var express = require("express");
 var bodyParser = require("body-parser");
-//var logger = require("morgan");
+var logger = require("morgan");
 var mongoose = require("mongoose");
 // Requiring our Note and Article models
 var Note = require("./models/Note.js");
@@ -20,7 +20,7 @@ mongoose.Promise = Promise;
 var app = express();
 
 // Use morgan and body parser with our app
-//app.use(logger("dev"));
+app.use(logger("dev"));
 app.use(bodyParser.urlencoded({
   extended: false
 }));
@@ -52,15 +52,22 @@ app.get("/scrape", function(req, res) {
   request("https://endoscopedia.com", function(error, response, html) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(html);
-    // Now, we grab every h2 within an article tag, and do the following:
-    $("h1.entry-title").each(function(i, element) {
+    // Grab ever article tag, and do the following:
+    $("article").each(function(i, element) {
 
       // Save an empty result object
       var result = {};
 
       // Add the text and href of every link, and save them as properties of the result object
-      result.title = $(this).children("a").text();
-      result.link = $(this).children("a").attr("href");
+      // result.title = $(this).children("a").text();
+      // result.link = $(this).children("a").attr("href");
+
+      //result.articleId = $(this).attr("id");
+      result.title = $(this).children().children(".entry-header").children(".entry-title").children("a").text();
+      result.datePublished = $(this).children().children(".entry-header").children(".entry-meta").children(".posted-on").children("a").children(".entry-date").text();
+      result.link = $(this).children().children(".entry-header").children(".entry-title").children("a").attr("href");
+      result.summary = $(this).children().children(".entry-content").children("p").text();
+
 
       // Using our Article model, create a new entry
       // This effectively passes the result object to the entry (and the title and link)
