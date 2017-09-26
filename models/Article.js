@@ -5,10 +5,11 @@ var Schema = mongoose.Schema;
 
 // Create article schema
 var ArticleSchema = new Schema({
-  // title is a required string
-//   articleId: {
+  // 
+//   postNumber: {
 //       type: String,
-//       required: true
+//       required: true,
+//       unique: true
 //   },
   title: {
     type: String,
